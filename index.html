@@ -13,17 +13,24 @@
     <h1>Roblox Group Game Viewer</h1>
     <input type="text" id="groupIdInput" placeholder="Enter Group ID" />
     <button onclick="fetchGames()">Fetch Games</button>
-    <div id="gamesContainer">No games found for this group.</div>
+    <div id="gamesContainer"></div>
 
     <script>
         async function fetchGames() {
             const groupId = document.getElementById('groupIdInput').value;
             const container = document.getElementById('gamesContainer');
+
+            // If groupId is empty, show a prompt to the user
+            if (!groupId) {
+                container.innerHTML = 'Please enter a valid Group ID.';
+                return;
+            }
+
             container.innerHTML = 'Loading...';
 
             try {
                 const response = await fetch(`https://mskswokcev.devrahsanko.workers.dev/?groupId=${groupId}`);
-                if (!response.ok) throw new Error('Failed to fetch data');
+                if (!response.ok) throw new Error(`Failed to fetch data. Status: ${response.status}`);
 
                 const data = await response.json();
                 const games = data.games || [];
@@ -52,15 +59,15 @@
 
             } catch (error) {
                 console.error('Error fetching games:', error);
-                container.innerHTML = 'Error loading games. Please try again later.';
+                container.innerHTML = `Error loading games: ${error.message}. Please try again later.`;
             }
         }
 
         // Auto-fetch on page load
-        window.onload = fetchGames;
+        window.onload = function() {
+            const container = document.getElementById('gamesContainer');
+            container.innerHTML = 'Please enter a Group ID above to fetch games.';
+        };
     </script>
-</body>
-</html>
-
 </body>
 </html>
